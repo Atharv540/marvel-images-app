@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="p5.js"></script>
+    <script src="p5.dom.min.js"></script>
+    <script src="p5.min.js"></script>
+    <script src="p5.play.js"></script>
+    <script src="p5.sound.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Images App</title>
+</head>
+<body>
+
+    <input type="text" placeholder="Enter Image URL" id="image_input" name="image_input" class="these_inputs">
+    <input type="text" placeholder="Enter Character" id="character_input" name="character_input" class="these_inputs">
+    <br><input type="text" placeholder="Enter Search Query" id="search_input" name="search_input">
+    <button id="submit_button" name="submit_button" onclick="submitToDatabase()" class="buttons">Submit to Database</button>
+    <button onclick="displayImages(search_input)" class="buttons">Display Images</button>
+    <button onclick="addUser()" class="auth_buttons">Add User</button>
+    <button onclick="signUserOut()" class="auth_buttons">Sign Out</button>
+    <button onclick="logUserIn()" class="auth_buttons">Log In</button>
+    <br>
+        <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-firestore.js"></script>
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-analytics.js"></script>
+
+    <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+        apiKey: "AIzaSyD4xRXPLgPJvXCszv5E7M9ErHt7jx9vxt0",
+        authDomain: "images-7f9a6.firebaseapp.com",
+        databaseURL: "https://images-7f9a6.firebaseio.com",
+        projectId: "images-7f9a6",
+        storageBucket: "images-7f9a6.appspot.com",
+        messagingSenderId: "189833659847",
+        appId: "1:189833659847:web:93e92ab1815df1d4ce05e2",
+        measurementId: "G-YQRYKCJJXP"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    db.settings({ timestampsInSnapshots: true }); 
+        </script>
+        <script src="app.js"></script>
+
+</body>
+</html>
