@@ -33,36 +33,11 @@ logUserIn = async () => {
 auth.onAuthStateChanged(user=>{
     if (user){
         window.alert("You're logged in!")
-        submitToDatabase = async () => {
-            db.collection('images').add({
-                imageUrl: image_input.value,
-                character: character_input.value,
-                rating: 2,
-                raters: 2,
-                total_rating_number: 4,
-                rated_users: [],
-                publisher: user['email'],
-            })
-            image_input.value = '';
-            character_input.value = '';
-        }
         
         deleteItem = async (id) => {
             db.collection('images').doc(id).delete();
         }
         
-        
-        db.collection('images').onSnapshot(snapshot=>{
-            let changes = snapshot.docChanges();
-            changes.forEach(change=>{
-                if(change.type === 'added' && ready>0){
-                    displayImages(search_input)
-                }
-                else if(change.type === 'removed' && ready>0){
-                    displayImages(search_input)
-                }
-            })
-        })
         
     }
     else{
@@ -135,6 +110,40 @@ auth.onAuthStateChanged(user=>{
                     
                 }
             }
+        }
+    }
+
+    db.collection('images').onSnapshot(snapshot=>{
+        let changes = snapshot.docChanges();
+        changes.forEach(change=>{
+            if(change.type === 'added' && ready>0){
+                displayImages(search_input)
+            }
+            else if(change.type === 'removed' && ready>0){
+                displayImages(search_input)
+            }
+        })
+    })
+
+    submitToDatabase = async () => {
+        if(user && image_input.value.split('').length>2 && character_input.value.split('').length>2){
+            db.collection('images').add({
+                imageUrl: image_input.value,
+                character: character_input.value,
+                rating: 2,
+                raters: 2,
+                total_rating_number: 4,
+                rated_users: [],
+                publisher: user['email'],
+            })
+            image_input.value = '';
+            character_input.value = '';
+        }
+        else if(image_input.value.split('').length<2 || character_input.value.split('').length<2){
+            window.alert('Your link or character needs to be more than 2 characters!');
+        }
+        else{
+            window.alert('You have to sign in, to add images!')
         }
     }
     
@@ -242,4 +251,5 @@ auth.onAuthStateChanged(user=>{
     openItemInNewWindow = async (url) => {
         window.open(url);
     }
+
 })
