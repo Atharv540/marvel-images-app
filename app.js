@@ -1,5 +1,5 @@
 
-var lastUrl, image_present, ready, entry;
+var lastUrl, image_present, ready, entry, displayed_images;
 
 const image_input = document.querySelector('#image_input');
 const character_input = document.querySelector('#character_input');
@@ -10,6 +10,7 @@ lastUrl = '';
 image_present = 0;
 ready = 0;
 entry = 0;
+displayed_images = [];
 
 addUser = async () => {
     const email = window.prompt('Email address');
@@ -51,11 +52,12 @@ auth.onAuthStateChanged(user=>{
                 element_to_remove.remove();
             }
             image_present = 0;
+            displayed_images = [];
         }
         db.collection('images').orderBy('rating', 'desc').get().then(snapshot=>{
             snapshot.docs.forEach(doc=>{
                 search_input_value.value = search_input_value.value.toLowerCase();
-                if(doc.data().character.toLowerCase().includes(search_input_value.value) || search_input_value.value.includes(doc.data().character.toLowerCase()) || oneSameWord(search_input_value.value, doc.data().character.toLowerCase(), doc)===true){
+                if((doc.data().character.toLowerCase().includes(search_input_value.value) || search_input_value.value.includes(doc.data().character.toLowerCase()) || oneSameWord(search_input_value.value, doc.data().character.toLowerCase(), doc)===true) && displayed_images.includes(doc.data().imageUrl) === false){
                     image_present++
                     let img = document.createElement('img');
                     img.setAttribute('src', doc.data().imageUrl);
@@ -66,6 +68,7 @@ auth.onAuthStateChanged(user=>{
                     img.style.height = '40%';
                     img.style.marginTop = '50px';
                     document.body.appendChild(img);
+                    displayed_images.push(doc.data().imageUrl);
                 }
             })
         })
@@ -74,23 +77,7 @@ auth.onAuthStateChanged(user=>{
     oneSameWord = async (search_value, db_value, document) => {
         search_value_split = search_value.split(' ');
         db_value_split = db_value.split(' ');
-        // for(x=0; x<search_value_split.length; x++){
-        //     for(y=0; y<db_value_split.length; y++){
-        //         if((search_value_split[x] === db_value_split[x] || search_value_split[y] === db_value_split[y] || search_value_split[x] === db_value_split[y] || search_value_split[y] === db_value_split[x]) && (search_value_split[x]!=='man' && search_value_split[y]!=='man') && (db_value_split[x]!=='man' && db_value_split[y]!=='man')){
-        //             let value = await db.collection('images').doc(document.id).get()
-        //             image_present++
-        //             showImage(value);
-        //         }
-        //         else if(search_value.includes(db_value_split[y])){
-        //             let value = await db.collection('images').doc(document.id).get()
-        //             console.log('!!!!!!! '+document.id+'/ '+document.data().character+'/ ');
-        //             console.log(db_value_split);
-        //             console.log(y+'/ '+x);
-        //             image_present++
-        //             showImage(value);
-        //         }
-        //     }
-        // }
+        
         for(x=0; x<search_value_split.length; x++){
             for(y=0; y<db_value_split.length; y++){
                 if(search_value_split[x] === db_value_split[y] && y!==db_value_split.length && db_value_split[y] !== 'man'){
@@ -143,12 +130,12 @@ auth.onAuthStateChanged(user=>{
             window.alert('Your link or character needs to be more than 2 characters!');
         }
         else{
-            window.alert('You have to sign in, to add images!')
+            window.alert('You have to sign in, to add images!');
         }
     }
     
     showImage = async (value) => {
-        if(lastUrl !== value.data().imageUrl){
+        if(lastUrl !== value.data().imageUrl && displayed_images.includes(value.data().imageUrl) === false){
             let img = document.createElement('img');
             img.setAttribute('src', value.data().imageUrl);
             img.setAttribute('id', 'this_image');
@@ -158,6 +145,7 @@ auth.onAuthStateChanged(user=>{
             img.style.height = '40%';
             img.style.marginTop = '50px';
             document.body.appendChild(img);
+            displayed_images.push(doc.data().imageUrl);
         }
         lastUrl = value.data().imageUrl
     }
